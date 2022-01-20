@@ -1,36 +1,48 @@
-from envs.shared_env_base import SharedEnvBase
+class CommonsShared:
 
+    periods_counter = 1
 
-class CommonsShared(SharedEnvBase):
-    def __init__(self):
-        SharedEnvBase.__init__(self)
+    # number of periods considered for calculating short and long term sustainabilities
+    n_steps_short_term = 1
+    n_steps_long_term = 5
 
-        # ---#---# ENVIRONMENT CONSTANTS #---#---#
+    # number of agents
+    n_agents = 2
 
-        # resources growing rate and environment carrying capacity
-        self.growing_rate = 0.3  # Ghorbani uses 0.25 - 0.35
-        self.carrying_capacity = 50000  # Ghorbani uses 10000 - 20000
+    # max periods per episode
+    max_episode_periods = 3
 
-        # probability of being caught wrong-doing
-        self.punishment_probability = 1
+    # rounds played by each agent in a period
+    agents_loop_steps = 5
+    # self.n_participants_loop_steps = self.agents_loop_steps * self.n_agents
 
-        # max replenishment (dependent on growth function)
-        self.max_replenishment = self.carrying_capacity * self.growing_rate * 0.5 ** 2
+    # episode count
+    episode_number = 0
 
-        # max consumption, penalty and increseases in consumption and penalty
-        self.max_penalty_multiplier = 2
-        self.max_penalty_multiplier_increase = 0.2
-        self.penalty_multiplier = 0
+    # resources growing rate and environment carrying capacity
+    growing_rate = 0.3  # Ghorbani uses 0.25 - 0.35
+    carrying_capacity = 50000  # Ghorbani uses 10000 - 20000
 
-        self.max_limit_exploit = self.max_replenishment * 2 / self.n_agents  # two times max replenishment
-        self.max_limit_exploit_increase = 1000
-        self.limit_exploit = 0
+    # probability of being caught wrong-doing
+    punishment_probability = 1
 
-        self.resources = 10000
+    # max replenishment (dependent on growth function)
+    max_replenishment = carrying_capacity * growing_rate * 0.5 ** 2
 
-        # ---#---# ENVIRONMENT VARIABLES #---#---#
+    # max consumption, penalty and increseases in consumption and penalty
+    max_penalty_multiplier = 2
+    max_penalty_multiplier_increase = 0.2
+    penalty_multiplier = 0
 
-        self.consumed_buffer = []
-        self.consumed = []
-        self.replenished_buffer = []
-        self.replenished = []
+    max_limit_exploit = max_replenishment * 2 / n_agents  # two times max replenishment
+    max_limit_exploit_increase = 1000
+    limit_exploit = 0
+
+    resources = 10000
+
+    # ---#---# ENVIRONMENT VARIABLES #---#---#
+
+    consumed_buffer = []
+    consumed = []
+    replenished_buffer = []
+    replenished = []

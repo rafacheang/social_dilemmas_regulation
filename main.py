@@ -4,9 +4,8 @@ from envs.commons.commons_regulator import CommonsRegulator
 from envs.commons.commons_shared import CommonsShared
 
 if __name__ == "__main__":
-    shared = CommonsShared()
 
-    env = CommonsRegulator(shared)
+    env = CommonsRegulator()
 
     model = SAC("MlpPolicy", env, gamma=1, verbose=0)
-    model.learn(total_timesteps=1000)
+    model.learn(total_timesteps=100)

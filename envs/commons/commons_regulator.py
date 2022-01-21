@@ -7,6 +7,7 @@ from stable_baselines3 import A2C
 
 from envs.commons.commons_multiagent import build_commons_multiagent_env
 from envs.commons.commons_shared import CommonsShared
+from sd_logging.logging import Logging
 
 
 class CommonsRegulator(gym.Env):
@@ -38,6 +39,7 @@ class CommonsRegulator(gym.Env):
         # clipping limit_exploit between 0 and max_limit_exploit
         CommonsShared.limit_exploit = max(0, min(CommonsShared.limit_exploit,
                                                  CommonsShared.max_limit_exploit))
+        print("new limit was set to: {}".format(CommonsShared.limit_exploit))
 
         CommonsShared.penalty_multiplier += (
                 action[1] * CommonsShared.max_penalty_multiplier_increase)
@@ -45,6 +47,7 @@ class CommonsRegulator(gym.Env):
         # clipping penalty between 0 and max_penalty
         CommonsShared.penalty_multiplier = max(0, min(CommonsShared.penalty_multiplier,
                                                       CommonsShared.max_penalty_multiplier))
+        print("new penalty multiplier was set to: {}".format(CommonsShared.penalty_multiplier))
 
         # Logging.log_actions(self.commons_shared_env.episode_number, action[0] * self.commons_shared_env.max_limit_exploit_increase,
         #                    action[1] * self.commons_shared_env.max_penalty_multiplier_increase)
@@ -62,25 +65,19 @@ class CommonsRegulator(gym.Env):
         st_sustainability = self.calculate_sustainability(CommonsShared.n_steps_short_term)
         lt_sustainability = self.calculate_sustainability(CommonsShared.n_steps_long_term)
 
-        CommonsShared.periods_counter += 1
-
         state = np.array([self.normalized_resources(), st_sustainability, lt_sustainability],
                          dtype=np.float32)
 
-        print(state)
-
-        # Logging.log_states(self.commons_shared_env.episode_number, self.state)
-        # Logging.log_steps_consumption(self.commons_shared_env.episode_number, self.commons_shared_env.consumed[-1])
-
-        reward = self.normalized_consumption()  # reward = last period consumption normalized
-
-        done = bool(CommonsShared.periods_counter > CommonsShared.max_episode_periods - 1
-                    or CommonsShared.resources == 0)
+        reward = self.normalized_consumption()  # reward = normalized last period consumption
 
         CommonsShared.periods_counter += 1
+        print(CommonsShared.periods_counter)
+        print(CommonsShared.max_episode_periods)
+        done = bool(CommonsShared.periods_counter > CommonsShared.max_episode_periods
+                    or CommonsShared.resources == 0)
 
         if done:
-            # Logging.log_episodes_rewards(self.commons_shared_env.episode_number, sum(self.commons_shared_env.consumed))
+            Logging.log_episodes_rewards(CommonsShared.episode_number, sum(CommonsShared.consumed))
             CommonsShared.episode_number += 1
 
             # should return next_state (observation), reward, done, {}
@@ -89,6 +86,8 @@ class CommonsRegulator(gym.Env):
     def reset(self):
         print("outer env reset was called")
         print(CommonsShared.resources)
+
+        CommonsShared.periods_counter = 1
 
         CommonsShared.resources = np.random.uniform(low=10000, high=30000)
 
@@ -106,7 +105,7 @@ class CommonsRegulator(gym.Env):
         CommonsShared.penalty_multiplier = np.random.normal(1, 0.2)
 
         state = (self.normalized_resources(), st_sustainability, lt_sustainability)
-        # Logging.log_states(self.commons_shared_env.episode_number, self.state)
+
         return np.array(state, dtype=np.float32)
 
     def calculate_sustainability(self, n_steps_back):

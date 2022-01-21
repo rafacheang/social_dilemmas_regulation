@@ -95,11 +95,13 @@ class CommonsMulti(AECEnv):
         # Logging.log_participants_rewards(Environment.episode_number, reward)
         # Logging.log_applied_penalty(Environment.episode_number, penalty)
 
+        CommonsShared.steps_counter += 1
+
         # selects the next agent
         self.agent_selection = self._agent_selector.next()
 
     def reset(self):
-        # print("inner env reset was called")
+        print("inner env reset was called")
 
         self.agents = self.possible_agents[:]
         self.rewards = {agent: 0 for agent in self.agents}

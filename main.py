@@ -13,4 +13,4 @@ if __name__ == "__main__":
     env = CommonsRegulator()
 
     model = SAC("MlpPolicy", env, gamma=0.95, verbose=0)
-    model.learn(total_timesteps=30000, callback=rewards_callback)
+    model.learn(total_timesteps=100, callback=rewards_callback)

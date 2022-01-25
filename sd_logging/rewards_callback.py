@@ -66,7 +66,7 @@ class RewardsCallback(BaseCallback):
         This event is triggered before exiting the `learn()` method.
         """
 
-        np.savetxt("logs/episodes_rewards.csv",
+        np.savetxt("logs/test.csv",
                    Logging.episodes_rewards,
                    fmt="%d",
                    delimiter=", ")

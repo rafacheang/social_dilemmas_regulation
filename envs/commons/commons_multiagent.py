@@ -78,6 +78,7 @@ class CommonsMulti(AECEnv):
 
         print("{} resources before replenishment".format(CommonsShared.resources))
         replenishment = 0
+
         # replenishes the resource after the last agent has consumed
         if self._agent_selector.is_last():
             replenishment = self.growth_function()
@@ -90,10 +91,6 @@ class CommonsMulti(AECEnv):
         print("replenishment: {}".format(replenishment))
         print("{} resources after replenishment".format(CommonsShared.resources))
         print("cumulative rewards: {}".format(self._cumulative_rewards))
-
-        # Logging.log_participants_loop(Environment.episode_number, consumption, replenishment)
-        # Logging.log_participants_rewards(Environment.episode_number, reward)
-        # Logging.log_applied_penalty(Environment.episode_number, penalty)
 
         CommonsShared.steps_counter += 1
 

@@ -26,7 +26,6 @@ class CommonsRegulator(gym.Env):
                                     policy_kwargs=multiagent_policy_kwargs)
 
         # 1st increase/decrease in limit to exploit, 2nd increase/decrease in the penalty multiplier for those who exploit above the limit.
-        # Both in percentage
         self.action_space = Box(low=np.array([-1, -1]), high=np.array([1, 1]), dtype=np.float32)
 
         # 1st is the resources, 2nd is short-term sustainability, 3rd is long-term sustainability
@@ -48,11 +47,6 @@ class CommonsRegulator(gym.Env):
         CommonsShared.penalty_multiplier = max(0, min(CommonsShared.penalty_multiplier,
                                                       CommonsShared.max_penalty_multiplier))
         print("new penalty multiplier was set to: {}".format(CommonsShared.penalty_multiplier))
-
-        # Logging.log_actions(self.commons_shared_env.episode_number, action[0] * self.commons_shared_env.max_limit_exploit_increase,
-        #                    action[1] * self.commons_shared_env.max_penalty_multiplier_increase)
-        # Logging.log_limit_exploit(self.commons_shared_env.episode_number, self.commons_shared_env.limit_exploit)
-        # Logging.log_penalty_multiplier(self.commons_shared_env.episode_number, self.commons_shared_env.penalty_multiplier)
 
         # trains participants for n_participants_loop_steps steps
         self.multiagent_model.learn(
@@ -85,7 +79,6 @@ class CommonsRegulator(gym.Env):
 
     def reset(self):
         print("outer env reset was called")
-        print(CommonsShared.resources)
 
         CommonsShared.periods_counter = 1
 
@@ -115,7 +108,7 @@ class CommonsRegulator(gym.Env):
         else:
             sustainability = sum(
                 CommonsShared.replenished[-n_steps_back:]) / 0.001  # this is just so the math won't break,
-            # should find something better later
+                                                                    # could try to find something better later
         return sustainability / (1 + sustainability)  # returns normalized sustainability
 
     def normalized_resources(self):

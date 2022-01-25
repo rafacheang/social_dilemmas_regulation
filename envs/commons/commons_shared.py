@@ -1,5 +1,5 @@
 class CommonsShared:
-
+    # period, step, and episode counter
     periods_counter = 1
     steps_counter = 1
     episode_number = 0
@@ -27,19 +27,13 @@ class CommonsShared:
     # max replenishment (dependent on growth function)
     max_replenishment = carrying_capacity * growing_rate * 0.5 ** 2
 
-    # max consumption, penalty and increseases in consumption and penalty
+    # max consumption, penalty, and increases in consumption and penalty
     max_penalty_multiplier = 3
     max_penalty_multiplier_increase = 0.5
-    penalty_multiplier = 0
-
     max_limit_exploit = max_replenishment * 2 / n_agents  # two times max replenishment
     max_limit_exploit_increase = 1000
-    limit_exploit = 0
 
-    resources = 10000
-
-    # ---#---# ENVIRONMENT VARIABLES #---#---#
-
+    #consumption and replenishment buffers
     consumed_buffer = []
     consumed = []
     replenished_buffer = []

@@ -26,8 +26,8 @@ class CommonsMulti(AECEnv):
         # how much of the resource to consume
         self.action_spaces = {agent: Box(low=0, high=1, shape=(1,)) for agent in self.possible_agents}
 
-        # 1st - max allowed to consume (limit-exploit), 2nd - penalty, 3rd - resources
-        self.observation_spaces = {agent: Box(low=0, high=1, shape=(3,)) for agent in self.possible_agents}
+        # resources
+        self.observation_spaces = {agent: Box(low=0, high=1, shape=(1,)) for agent in self.possible_agents}
 
     def render(self, mode="human"):
         print("Current state resources: {}".format(CommonsShared.resources))
@@ -64,23 +64,18 @@ class CommonsMulti(AECEnv):
         #print("{} consumed {} resources".format(agent, consumption))
         #print("{} resources after {} consumption".format(CommonsShared.resources, agent))
 
-        penalty = self.apply_penalty(consumption)
-        #print("applied penalty was {}".format(penalty))
-
-        reward = self.normalize_consumption(consumption - penalty)
+        reward = self.normalize_consumption(consumption)
         self.rewards[agent] = reward
         #print("reward received by {} this round: {}".format(agent, reward))
 
         Logging.log_consumption(CommonsShared.episode_number, CommonsShared.periods_counter,
                                 CommonsShared.steps_counter, agent, consumption, CommonsShared.resources,
-                                CommonsShared.limit_exploit, CommonsShared.penalty_multiplier, penalty, reward)
+                                CommonsShared.limit_exploit, CommonsShared.penalty_multiplier, 0, reward)
 
         # observe the current state
         for agent in self.agents:
-            self.observations[agent] = [self.normalized_limit_exploit(), self.normalized_penalty(),
-                                        self.normalized_resources()]
-            self.state[agent] = [self.normalized_limit_exploit(), self.normalized_penalty(),
-                                 self.normalized_resources()]
+            self.observations[agent] = [self.normalized_resources()]
+            self.state[agent] = [self.normalized_resources()]
 
         #print("{} resources before replenishment".format(CommonsShared.resources))
         replenishment = 0
@@ -111,11 +106,8 @@ class CommonsMulti(AECEnv):
         self._cumulative_rewards = {agent: 0 for agent in self.agents}
         self.dones = {agent: False for agent in self.agents}
         self.infos = {agent: {} for agent in self.agents}
-        self.state = {agent: [self.normalized_limit_exploit(), self.normalized_penalty(), self.normalized_resources()]
-                      for agent in self.agents}
-        self.observations = {
-            agent: [self.normalized_limit_exploit(), self.normalized_penalty(), self.normalized_resources()] for agent
-            in self.agents}
+        self.state = {agent: [self.normalized_resources()] for agent in self.agents}
+        self.observations = {agent: [self.normalized_resources()] for agent in self.agents}
 
         self._agent_selector = agent_selector(self.agents)
         self.agent_selection = self._agent_selector.next()
@@ -130,23 +122,8 @@ class CommonsMulti(AECEnv):
         random_noise = np.random.normal() * growth * 0.1
         return growth + random_noise
 
-    def normalized_limit_exploit(self):
-        return CommonsShared.limit_exploit / CommonsShared.max_limit_exploit
-
-    def normalized_penalty(self):
-        return CommonsShared.penalty_multiplier / CommonsShared.max_penalty_multiplier
-
     def normalized_resources(self):
         return CommonsShared.resources / CommonsShared.carrying_capacity
 
     def normalize_consumption(self, consumption):
         return consumption / (CommonsShared.max_limit_exploit / 4) - 2
-
-    def apply_penalty(self, consumption):
-        if consumption > CommonsShared.limit_exploit:
-            if np.random.uniform() <= CommonsShared.punishment_probability:
-                return self.calculate_penalty(consumption)
-        return 0
-
-    def calculate_penalty(self, consumption):
-        return (consumption - CommonsShared.limit_exploit) * (CommonsShared.penalty_multiplier + 1)

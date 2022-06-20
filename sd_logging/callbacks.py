@@ -1,16 +1,18 @@
 import numpy as np
+
+from envs.commons.commons_shared import CommonsShared
 from sd_logging.logging import Logging
 from stable_baselines3.common.callbacks import BaseCallback
 
 
-class RewardsCallback(BaseCallback):
+class EndOfEpisodeCallback(BaseCallback):
     """
     A custom callback that derives from ``BaseCallback``.
 
     :param verbose: (int) Verbosity level 0: not output 1: info 2: debug
     """
     def __init__(self, verbose=0):
-        super(RewardsCallback, self).__init__(verbose)
+        super(EndOfEpisodeCallback, self).__init__(verbose)
         # Those variables will be accessible in the callback
         # (they are defined in the base class)
         # The RL model
@@ -66,7 +68,12 @@ class RewardsCallback(BaseCallback):
         This event is triggered before exiting the `learn()` method.
         """
 
-        np.savetxt("logs/test.csv",
+        np.savetxt("logs/extended_paper/run10-rewards-regulator.csv",
                    Logging.episodes_rewards,
-                   fmt="%d",
+                   fmt="%s",
+                   delimiter=", ")
+
+        np.savetxt("logs/extended_paper/run10-consumption-regulator.csv",
+                   Logging.consumption,
+                   fmt="%s",
                    delimiter=", ")

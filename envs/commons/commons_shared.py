@@ -10,6 +10,8 @@ class CommonsShared:
 
     # number of agents
     n_agents = 5
+    # list with agents' names
+    possible_agents = ["player" + str(x) for x in range(n_agents)]
 
     # max periods per episode
     max_episode_periods = 10
@@ -30,11 +32,11 @@ class CommonsShared:
     # max consumption, penalty, and increases in consumption and penalty
     max_penalty_multiplier = 3
     max_penalty_multiplier_increase = 0.5
-    max_limit_exploit = max_replenishment * 2 / n_agents  # two times max replenishment
-    max_limit_exploit_increase = 1000
+    max_limit_exploit = max_replenishment * 2 / n_agents  # two times max replenishment per agent
+    max_limit_exploit_increase = 400
 
     #consumption and replenishment buffers
-    consumed_buffer = []
-    consumed = []
-    replenished_buffer = []
-    replenished = []
+    step_consumption = []
+    period_consumption = []
+    step_replenishment = []
+    period_replenishment = []

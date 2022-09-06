@@ -1,6 +1,5 @@
 import numpy as np
 
-from envs.commons.commons_shared import CommonsShared
 from sd_logging.logging import Logging
 from stable_baselines3.common.callbacks import BaseCallback
 
@@ -68,12 +67,12 @@ class EndOfEpisodeCallback(BaseCallback):
         This event is triggered before exiting the `learn()` method.
         """
 
-        np.savetxt("logs/extended_paper/run10-rewards-regulator.csv",
+        np.savetxt("logs/test.csv",
                    Logging.episodes_rewards,
                    fmt="%s",
                    delimiter=", ")
 
-        np.savetxt("logs/extended_paper/run10-consumption-regulator.csv",
+        np.savetxt("logs/test.csv",
                    Logging.consumption,
                    fmt="%s",
                    delimiter=", ")
